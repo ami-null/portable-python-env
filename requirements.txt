@@ -1,0 +1,11 @@
+numpy
+pandas
+jupyterlab
+jupyter-lsp
+#jupyter-lsp-python
+python-lsp-server
+pandas
+xlrd
+openpyxl
+matplotlib
+seaborn
