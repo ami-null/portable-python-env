@@ -6,7 +6,7 @@ This project was **vibe coded using Gemini**.
 
 ---
 
-## ── Project Structure ──
+## Project Structure
 
 * **`python_and_vscode/`**: The root container for all portable binaries.
     * `uv/`: The `uv` executable for lightning-fast package and Python management.
@@ -16,7 +16,7 @@ This project was **vibe coded using Gemini**.
 
 ---
 
-## ── How to Use ──
+## How to Use
 
 ### 1. Build the Environment
 Run the scripts in order to initialize the portable folder:
@@ -30,7 +30,7 @@ Run the scripts in order to initialize the portable folder:
 
 ---
 
-## ── Key Features ──
+## Key Features
 
 * **Zero Footprint:** Uses temporary session variables. Your system `PATH` remains untouched.
 * **Portable Jupyter:** Redirects `JUPYTER_CONFIG_DIR` so your settings travel with you.
@@ -38,6 +38,6 @@ Run the scripts in order to initialize the portable folder:
 
 ---
 
-## ── License ──
+## License
 
 This is free and unencumbered software released into the public domain under **The Unlicense**.
