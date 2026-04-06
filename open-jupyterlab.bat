@@ -30,6 +30,9 @@ set "JUPYTER_RUNTIME_DIR=%ROOT_DIR%\.jupyter_runtime"
 if not exist "%JUPYTER_CONFIG_DIR%" mkdir "%JUPYTER_CONFIG_DIR%"
 if not exist "%JUPYTER_DATA_DIR%" mkdir "%JUPYTER_DATA_DIR%"
 
+
+if not exist notebooks mkdir notebooks
+
 :: 3. Launch Jupyter Lab
 echo Launching Jupyter Lab...
 REM echo [Workspace: %~dp0]
@@ -37,7 +40,7 @@ REM echo [Workspace: %~dp0]
 :: Launching in the current directory
 REM "%JUPYTER_EXE%" --notebook-dir="%~dp0"
 REM "%JUPYTER_EXE%"
-"%PYTHON_DIR%\python.exe" -m jupyterlab --log-level=ERROR
+"%PYTHON_DIR%\python.exe" -m jupyterlab --log-level=ERROR --notebook-dir=./notebooks
 
 echo.
 REM echo Jupyter Lab is starting in your browser.
