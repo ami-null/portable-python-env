@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 :: Configuration
-set "ROOT_DIR=%~dp0python_and_vscode"
+set "ROOT_DIR=%~dp0pytools"
 set "UV_DIR=%ROOT_DIR%\uv"
 set "TEMP_ZIP=%TEMP%\uv_download.zip"
 
