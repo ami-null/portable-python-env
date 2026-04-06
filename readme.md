@@ -30,6 +30,17 @@ Run the scripts in order to initialize the portable folder:
 
 ---
 
+## Known Issues
+
+### ⚠️ Broken Shims on Move/Rename
+Moving or renaming the parent folder will break the executable "shims" (the `.exe` files in `python\Scripts\`). This happens because the absolute paths to the interpreter are hardcoded into these wrappers during installation.
+
+**The Workaround:**
+* **Launchers:** This environment uses `python -m <module>` (e.g., `python -m jupyterlab`) in its launch scripts to bypass these shims. This ensures the environment remains functional regardless of the folder's location.
+* **Manual Fix:** If you need to fix the `.exe` files in the `Scripts` folder, simply rerun `03_install_packages.bat`. This will refresh the internal paths to match the new location.
+
+---
+
 ## Key Features
 
 * **Zero Footprint:** Uses temporary session variables. Your system `PATH` remains untouched.
