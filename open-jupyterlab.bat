@@ -9,6 +9,8 @@ set "SCRIPTS_DIR=%PYTHON_DIR%\Scripts"
 set "UV_DIR=%ROOT_DIR%\uv"
 set "CUSTOM_SCRIPTS_DIR=%~dp0custom_scripts"
 
+set UV_LINK_MODE=copy
+
 :: 1. Validation
 if not exist "%JUPYTER_EXE%" (
     echo ERROR: Jupyter Lab not found. 

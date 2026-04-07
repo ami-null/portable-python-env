@@ -8,6 +8,8 @@ set "SCRIPTS_DIR=%PYTHON_DIR%\Scripts"
 set "UV_DIR=%ROOT_DIR%\uv"
 set "CUSTOM_SCRIPTS_DIR=%~dp0custom_scripts"
 
+set UV_LINK_MODE=copy
+
 if not exist notebooks mkdir notebooks
 
 :: 1. Validation
