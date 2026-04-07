@@ -7,6 +7,12 @@ set "UV_EXE=%ROOT_DIR%\uv\uv.exe"
 set "PYTHON_DIR=%ROOT_DIR%\python"
 set "INSTALL_TEMP=%PYTHON_DIR%\_temp_install"
 
+
+:: Use UV_PYTHON_INSTALL_DIR to redirect the toolchain installation
+:: We install into a temp folder first to flatten the structure
+set "UV_PYTHON_INSTALL_DIR=%INSTALL_TEMP%"
+set UV_PYTHON_INSTALL_BIN=0
+
 echo Setting up Portable Python via uv...
 
 :: Check if uv exists
@@ -38,10 +44,6 @@ mkdir "%INSTALL_TEMP%"
 echo.
 echo Downloading Python %PY_VER%...
 
-:: Use UV_PYTHON_INSTALL_DIR to redirect the toolchain installation
-:: We install into a temp folder first to flatten the structure
-set UV_PYTHON_INSTALL_BIN=0
-set "UV_PYTHON_INSTALL_DIR=%INSTALL_TEMP%"
 
 "%UV_EXE%" python install %PY_VER%
 
