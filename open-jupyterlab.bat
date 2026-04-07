@@ -40,16 +40,10 @@ if not exist notebooks mkdir notebooks
 
 :: 3. Launch Jupyter Lab
 echo Launching Jupyter Lab...
-REM echo [Workspace: %~dp0]
 
 :: Launching in the current directory
-REM "%JUPYTER_EXE%" --notebook-dir="%~dp0"
-REM "%JUPYTER_EXE%"
 "%PYTHON_DIR%\python.exe" -m jupyterlab --log-level=ERROR --notebook-dir=./notebooks
 
 echo.
-REM echo Jupyter Lab is starting in your browser.
-REM timeout /t 5 >nul
-REM exit /b 0
 echo Jupyter Lab exited.
 pause
