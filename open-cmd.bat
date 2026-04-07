@@ -13,23 +13,13 @@ set UV_PYTHON_INSTALL_BIN=0
 
 if not exist notebooks mkdir notebooks
 
-:: 1. Validation
-if not exist "%PYTHON_DIR%\python.exe" (
-    echo ERROR: Portable Python not found.
-    pause
-    exit /b 1
-)
 
-if not exist "%UV_DIR%\uv.exe" (
-    echo ERROR: uv not found.
-    pause
-    exit /b 1
-)
-
-:: 2. Environment Setup (Session Only)
+:: Environment Setup (Session Only)
 :: Prepend Python, Scripts, and uv to the PATH
 set "PATH=%CUSTOM_SCRIPTS_DIR%;%PYTHON_DIR%;%SCRIPTS_DIR%;%UV_DIR%;%PATH%"
 
+:: Set Python Home to ensure it stays internal
+set "PYTHONHOME=%PYTHON_DIR%"
 
 :: Redirect Jupyter's internal storage to our portable root
 :: This prevents Jupyter from writing to C:\Users\Name\AppData
@@ -41,8 +31,19 @@ set "JUPYTER_RUNTIME_DIR=%ROOT_DIR%\.jupyter_runtime"
 if not exist "%JUPYTER_CONFIG_DIR%" mkdir "%JUPYTER_CONFIG_DIR%"
 if not exist "%JUPYTER_DATA_DIR%" mkdir "%JUPYTER_DATA_DIR%"
 
-:: Set Python Home to ensure it stays internal
-set "PYTHONHOME=%PYTHON_DIR%"
+
+:: Validation
+if not exist "%PYTHON_DIR%\python.exe" (
+    echo ERROR: Portable Python not found.
+    pause
+    exit /b 1
+)
+
+if not exist "%UV_DIR%\uv.exe" (
+    echo ERROR: uv not found.
+    pause
+    exit /b 1
+)
 
 echo ====================================================
 echo   PORTABLE SHELL ACTIVATED
