@@ -5,7 +5,7 @@ setlocal
 set "ROOT_DIR=%~dp0pytools"
 set "PYTHON_DIR=%ROOT_DIR%\python"
 set "SCRIPTS_DIR=%PYTHON_DIR%\Scripts"
-set "JUPYTER_EXE=%SCRIPTS_DIR%\jupyter-lab.exe"
+:: set "JUPYTER_EXE=%SCRIPTS_DIR%\jupyter-lab.exe"
 set "UV_DIR=%ROOT_DIR%\uv"
 set "CUSTOM_SCRIPTS_DIR=%~dp0custom_scripts"
 
