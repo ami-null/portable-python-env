@@ -12,6 +12,7 @@ set "INSTALL_TEMP=%PYTHON_DIR%\_temp_install"
 :: We install into a temp folder first to flatten the structure
 set "UV_PYTHON_INSTALL_DIR=%INSTALL_TEMP%"
 set UV_PYTHON_INSTALL_BIN=0
+set UV_PYTHON_INSTALL_REGISTRY=0
 
 :: Check if uv exists
 if not exist "%UV_EXE%" (
