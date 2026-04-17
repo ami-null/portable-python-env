@@ -7,7 +7,7 @@ set "PYTHON_DIR=%ROOT_DIR%\python"
 set "SCRIPTS_DIR=%PYTHON_DIR%\Scripts"
 set "JUPYTER_EXE=%SCRIPTS_DIR%\jupyter-lab.exe"
 set "UV_DIR=%ROOT_DIR%\uv"
-set "CUSTOM_SCRIPTS_DIR=%~dp0custom_scripts"
+set "CUSTOM_SCRIPTS_DIR=%ROOT_DIR%\custom_scripts"
 
 set UV_LINK_MODE=copy
 set UV_PYTHON_INSTALL_BIN=0
