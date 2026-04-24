@@ -5,6 +5,7 @@ setlocal enabledelayedexpansion
 set "ROOT_DIR=%~dp0dependencies"
 set "UV_DIR=%ROOT_DIR%\uv"
 set "TEMP_ZIP=%TEMP%\uv_download.zip"
+set "HELPER_SCRIPTS_DIR=%ROOT_DIR%\helper_scripts\"
 
 echo Setting up uv...
 
@@ -23,21 +24,43 @@ if not exist "%UV_DIR%" mkdir "%UV_DIR%"
 
 echo Fetching latest release info from GitHub...
 
-:: PowerShell logic for API parsing and downloading
-powershell -ExecutionPolicy Bypass -Command ^
-    "$arch = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'aarch64' } else { 'x86_64' };" ^
-    "$uri = 'https://api.github.com/repos/astral-sh/uv/releases/latest';" ^
-    "$response = Invoke-RestMethod -Uri $uri;" ^
-    "$asset = $response.assets | Where-Object { $_.name -like \"*-$arch-pc-windows-msvc.zip\" } | Select-Object -First 1;" ^
-    "if (-not $asset) { Write-Error 'Could not find a matching Windows zip asset.'; exit 1 };" ^
-    "Write-Host \"Downloading $($asset.name)...\";" ^
-    "Invoke-WebRequest -Uri $asset.browser_download_url -OutFile '%TEMP_ZIP%';" ^
-    "Write-Host 'Extracting...';" ^
-    "Expand-Archive -Path '%TEMP_ZIP%' -DestinationPath '%UV_DIR%_temp' -Force;" ^
-    "$exe = Get-ChildItem -Path '%UV_DIR%_temp' -Filter 'uv.exe' -Recurse | Select-Object -First 1;" ^
-    "if ($exe) { Move-Item -Path $exe.FullName -Destination '%UV_DIR%\' -Force };" ^
-    "if (Test-Path '%UV_DIR%_temp') { Remove-Item -Path '%UV_DIR%_temp' -Recurse -Force };" ^
-    "if (Test-Path '%TEMP_ZIP%') { Remove-Item -Path '%TEMP_ZIP%' -Force };"
+set "GH_USER=astral-sh"
+set "GH_REPO=uv"
+
+echo Resolving latest release... >&2
+
+for /f "delims=" %%U in ('call "%HELPER_SCRIPTS_DIR%get-gh-release.bat" %GH_USER% %GH_REPO% windows x86_64 zip msvc -sha256') do (
+    set "DOWNLOAD_URL=%%U"
+)
+if "!DOWNLOAD_URL!"=="" (
+    echo ERROR: Could not resolve direct download URL. >&2
+    exit /b 1
+)
+echo Downloading: !DOWNLOAD_URL! >&2
+
+curl -fSL --progress-bar -o %ROOT_DIR%\uv.zip "!DOWNLOAD_URL!"
+if %ERRORLEVEL% neq 0 (
+    echo ERROR: curl failed ^(exit code %ERRORLEVEL%^) while downloading: >&2
+    echo        %DOWNLOAD_URL% >&2
+    exit /b 1
+)
+echo Download complete. >&2
+
+
+for /f "delims=" %%F in ('tar -tf %ROOT_DIR%\uv.zip ^| findstr /r "uv\.exe$"') do (
+    REM echo Found: %%F
+    
+    :: 2. Extract that specific path and redirect the stream to your target file
+    tar -xOf %ROOT_DIR%\uv.zip "%%F" > "%UV_DIR%\uv.exe"
+    
+    :: 3. Exit after the first match is found
+    goto :done
+)
+:done
+echo Extraction complete.
+:: Deleting uv.zip
+del /q %ROOT_DIR%\uv.zip
+
 
 if %ERRORLEVEL% equ 0 (
     echo uv successfully set up in %UV_DIR%
