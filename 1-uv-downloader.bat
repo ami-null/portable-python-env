@@ -4,70 +4,70 @@ setlocal enabledelayedexpansion
 :: Configuration
 set "ROOT_DIR=%~dp0dependencies"
 set "UV_DIR=%ROOT_DIR%\uv"
-set "TEMP_ZIP=%TEMP%\uv_download.zip"
-set "HELPER_SCRIPTS_DIR=%ROOT_DIR%\helper_scripts\"
+set "HELPER_SCRIPTS_DIR=%ROOT_DIR%\helper_scripts"
+set "TEMP_ZIP=%TEMP%\uv_download_latest.zip"
 
 echo Setting up uv...
 
-:: Check if directory exists
-if exist "%UV_DIR%" (
-    set /p "choice=The 'uv' folder already exists. Overwrite and download the latest uv version? (Y/N): "
+:: Check if uv.exe already exists
+if exist "%UV_DIR%\uv.exe" (
+    set /p "choice=The 'uv' tool already exists. Overwrite and download the latest version? (Y/N): "
     if /i "!choice!" neq "Y" (
         echo Skipping uv download.
         exit /b 0
     )
-    rd /s /q "%UV_DIR%"
+    rd /s /q "%UV_DIR%" 2>nul
 )
 
-:: Ensure root and uv directory exists
+:: Ensure uv directory exists
 if not exist "%UV_DIR%" mkdir "%UV_DIR%"
 
-echo Fetching latest release info from GitHub...
+echo Resolving latest release information from GitHub...
 
 set "GH_USER=astral-sh"
 set "GH_REPO=uv"
 
-echo Resolving latest release... >&2
-
-for /f "delims=" %%U in ('call "%HELPER_SCRIPTS_DIR%get-gh-release.bat" %GH_USER% %GH_REPO% windows x86_64 zip msvc -sha256') do (
+:: Call the helper script to resolve the URL
+for /f "delims=" %%U in ('call "%HELPER_SCRIPTS_DIR%\get-gh-release.bat" %GH_USER% %GH_REPO% windows x86_64 zip msvc -sha256') do (
     set "DOWNLOAD_URL=%%U"
 )
+
 if "!DOWNLOAD_URL!"=="" (
     echo ERROR: Could not resolve direct download URL. >&2
     exit /b 1
 )
-echo Downloading: !DOWNLOAD_URL! >&2
 
-curl -fSL --progress-bar -o %ROOT_DIR%\uv.zip "!DOWNLOAD_URL!"
+echo Downloading: !DOWNLOAD_URL!
+
+:: -f (fail silently), -S (show errors), -L (follow redirects)
+curl -fSL --progress-bar -o "%TEMP_ZIP%" "!DOWNLOAD_URL!"
 if %ERRORLEVEL% neq 0 (
     echo ERROR: curl failed ^(exit code %ERRORLEVEL%^) while downloading: >&2
     echo        %DOWNLOAD_URL% >&2
     exit /b 1
 )
-echo Download complete. >&2
+echo Download complete.
 
-
-for /f "delims=" %%F in ('tar -tf %ROOT_DIR%\uv.zip ^| findstr /r "uv\.exe$"') do (
-    REM echo Found: %%F
-    
-    :: 2. Extract that specific path and redirect the stream to your target file
-    tar -xOf %ROOT_DIR%\uv.zip "%%F" > "%UV_DIR%\uv.exe"
-    
-    :: 3. Exit after the first match is found
-    goto :done
+echo Extracting uv.exe...
+:: Find uv.exe in the zip archive, extract it directly to stdout, and write to target
+set "FOUND_EXE=0"
+for /f "delims=" %%F in ('tar -tf "%TEMP_ZIP%" ^| findstr /i "uv\.exe$"') do (
+    tar -xOf "%TEMP_ZIP%" "%%F" > "%UV_DIR%\uv.exe"
+    set "FOUND_EXE=1"
+    goto :done_extract
 )
-:done
-echo Extraction complete.
-:: Deleting uv.zip
-del /q %ROOT_DIR%\uv.zip
 
+:done_extract
+:: Cleanup the temporary zip file
+if exist "%TEMP_ZIP%" del /q "%TEMP_ZIP%"
 
-if %ERRORLEVEL% equ 0 (
-    echo uv successfully set up in %UV_DIR%
+:: Verify whether extraction succeeded
+if "%FOUND_EXE%"=="1" if exist "%UV_DIR%\uv.exe" (
+    echo Extraction complete. uv successfully set up in "%UV_DIR%"
     "%UV_DIR%\uv.exe" --version
 ) else (
-    echo Failed to set up uv.
+    echo ERROR: Failed to extract or locate uv.exe within the archive. >&2
     exit /b 1
 )
 
-if "%~1" neq "/nopause" pause
+if /i "%~1" neq "/nopause" pause
